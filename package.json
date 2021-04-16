@@ -1,0 +1,14 @@
+{
+  "name": "json-prisma-schema",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "prisma": "^2.21.2",
+    "prisma-json-schema-generator": "^1.2.2",
+    "prisma-schema-dsl": "^1.1.5"
+  },
+  "scripts": {
+    "parse": "prisma generate && node index.js"
+  }
+}
