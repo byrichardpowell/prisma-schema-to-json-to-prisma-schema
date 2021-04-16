@@ -21,4 +21,16 @@ The output will be in `./json-to-schema`. As you can see, there are some problem
 
 Partially. To convert `schema.prisma` to `JSON` we use [prisma-json-schema-generator](https://github.com/valentinpalkovic/prisma-json-schema-generator). Unfortunately this skips vital information such as `@id @default(autoincrement())` (Everything after @). Without this information, we can not generate a valid `schema.prisma`.
 
-This is a very solveable problem though. We could extend [prisma-json-schema-generator](https://github.com/valentinpalkovic/prisma-json-schema-generator)
+This is a very solveable problem though. We could extend [prisma-json-schema-generator](https://github.com/valentinpalkovic/prisma-json-schema-generator). It already has the data we need, e.g:
+
+```
+{
+    name: 'id',
+    ...
+    isId: true,
+    ...
+    default: { name: 'autoincrement', args: [] },
+}
+```
+
+This can be found, for example by: `options.dmmf.datamodel.models[0].fields`
