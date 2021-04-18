@@ -12,25 +12,21 @@ In theory, an application could provide a UI for creating and editing a `schema.
 
 ```
 yarn install
-yarn run parse
+yarn run prismaToJSON
+yarn run JSONToPrisma
 ```
 
-The output will be in `./json-to-schema`. As you can see, there are some problems (see is the concept proven).
+The output will be in `./output/`. `schema.js` is the JSON representation of the prisma schema. `schema.prisma` is the result of converting the JSON schema back to a prisma schema. Both files are missing some information (see next section).
 
-## Is the concept proven?
+## Known Limitations
 
-Partially. To convert `schema.prisma` to `JSON` we use [prisma-json-schema-generator](https://github.com/valentinpalkovic/prisma-json-schema-generator). Unfortunately this skips vital information such as `@id @default(autoincrement())` (Everything after @). Without this information, we can not generate a valid `schema.prisma`.
+To convert `schema.prisma` to `JSON` we use [pal schema](https://paljs.com/cli/schema). Unfortunately this skips default values. To illustrate:
 
-This is a very solveable problem though. We could extend [prisma-json-schema-generator](https://github.com/valentinpalkovic/prisma-json-schema-generator). It already has the data we need, e.g:
+1. For `@id`, `@default(autoincreent())` is not included. This might not be an issue because we can assume that every model would have an ID, and that the user has no need to customize this. Therefore we could automatically add it.
+2. For `DateTime`, `@default(now())` is not included. Again, this might not be an issue, because we could assume that every model has `createdAt` fields, and automatically add them. Therefore we could automatically add it. The same could be said for `updatedAt`.
+3. For `role` the defualt `ENUM` is not recorded. This is an issue, as loosing this information would signficantly change application behaviour.
 
-```
-{
-    name: 'id',
-    ...
-    isId: true,
-    ...
-    default: { name: 'autoincrement', args: [] },
-}
-```
+The solution to this seem to be either:
 
-This can be found, for example by: `options.dmmf.datamodel.models[0].fields`
+1. forking, contributing, or replacing [pal schema](https://paljs.com/cli/schema).
+2. Never converting from `schema.prisma` to `JSON`, and then extending the `JSON` information to include the missing pieces.
